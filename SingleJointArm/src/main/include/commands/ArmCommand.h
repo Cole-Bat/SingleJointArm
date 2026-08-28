@@ -7,25 +7,25 @@
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
 
-#include "subsystems/ExampleSubsystem.h"
+#include "subsystems/ArmSubsystem.h"
 
 /**
- * An example command that uses an example subsystem.
+ * An Arm command that uses an Arm subsystem.
  *
  * <p>Note that this extends CommandHelper, rather extending Command
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class ExampleCommand
-    : public frc2::CommandHelper<frc2::Command, ExampleCommand> {
+class ArmCommand
+    : public frc2::CommandHelper<frc2::Command, ArmCommand> {
  public:
   /**
-   * Creates a new ExampleCommand.
+   * Creates a new ArmCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  explicit ExampleCommand(ExampleSubsystem* subsystem);
+  explicit ArmCommand(ArmSubsystem* subsystem);
 
  private:
-  ExampleSubsystem* m_subsystem;
+  ArmSubsystem* m_arm;
 };

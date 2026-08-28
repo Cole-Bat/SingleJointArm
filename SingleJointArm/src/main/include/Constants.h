@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <units/angular_velocity.h>
+#include <units/angular_acceleration.h>
+#include <units/angular_jerk.h>
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants.  This should not be used for any other
@@ -14,8 +17,14 @@
  * they are needed.
  */
 
-namespace OperatorConstants {
+namespace Constants {
 
 inline constexpr int kDriverControllerPort = 0;
+
+inline constexpr double GEAR_RATIO = 1.0;
+inline constexpr units::angular_velocity::turns_per_second_t ARM_CRUISE_VELOCITY{0.04}; //in RPS
+inline constexpr units::angular_acceleration::turns_per_second_squared_t ARM_MAX_ACCEL{0.08}; // in RPS / S
+inline constexpr units::angular_jerk::turns_per_second_cubed_t ARM_TARGET_JERK{0.8}; // in RPS / S / S
+
 
 }  // namespace OperatorConstants
