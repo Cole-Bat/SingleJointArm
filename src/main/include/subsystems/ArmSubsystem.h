@@ -62,8 +62,6 @@ class ArmSubsystem : public frc2::SubsystemBase {
  hardware::TalonFX  m_armMotor4{29};
 
  hardware::CANcoder m_armCANCoder{7};
- 
- configs::CANcoderConfiguration m_armCANCoderConfig{};
 
  controls::MotionMagicVoltage m_request{0_tr}; 
  
