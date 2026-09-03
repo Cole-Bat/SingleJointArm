@@ -22,7 +22,7 @@ class ArmSubsystem : public frc2::SubsystemBase {
   frc2::CommandPtr SysIdQuasistatic(frc2::sysid::Direction direction);
   frc2::CommandPtr SysIdDynamic(frc2::sysid::Direction direction);
 
-  void TeleopMove(const double& omega);
+  void TeleopMove(const double omega);
   
   /**
    * Arm command factory method.
@@ -54,14 +54,14 @@ class ArmSubsystem : public frc2::SubsystemBase {
  
  frc2::sysid::SysIdRoutine m_sysIdRoutine;
  
- CANBus rioBus{"rio"};
+ //CANBus rioBus{"rio"};
  
- hardware::TalonFX  m_armMotor1{26, "rio" };  
- hardware::TalonFX  m_armMotor2{27, "rio" };  
- hardware::TalonFX  m_armMotor3{28, "rio" }; 
- hardware::TalonFX  m_armMotor4{29, "rio" };
+ hardware::TalonFX  m_armMotor1{26};  
+ hardware::TalonFX  m_armMotor2{27};  
+ hardware::TalonFX  m_armMotor3{28}; 
+ hardware::TalonFX  m_armMotor4{29};
 
- hardware::CANcoder m_armCANCoder{7, "rio"};
+ hardware::CANcoder m_armCANCoder{7};
  
  configs::TalonFXConfiguration m_armMotorConfig{};
  configs::CANcoderConfiguration m_armCANCoderConfig{};

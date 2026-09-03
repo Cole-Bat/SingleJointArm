@@ -15,7 +15,7 @@ using namespace ctre::phoenix6;
 
 ArmSubsystem::ArmSubsystem()
   : m_sysIdRoutine{
-      frc2::sysid::Config{1_V / 1_s, 7_V, 10_s, nullptr},
+      frc2::sysid::Config{1_V / 1_s, 4_V, 10_s, nullptr},
       frc2::sysid::Mechanism{
         [this] (units::volt_t voltage) {
         m_armMotor1.SetVoltage(voltage);
@@ -23,8 +23,8 @@ ArmSubsystem::ArmSubsystem()
         [this] (frc::sysid::SysIdRoutineLog* log) {
         log->Motor("Arm Motor")
           .voltage(m_armMotor1.GetMotorVoltage().GetValue())
-          .position(units::angle::turn_t(m_armMotor1.GetPosition().GetValue()))
-          .velocity(units::angular_velocity::turns_per_second_t(m_armMotor1.GetVelocity().GetValue()));
+          .position(units::angle::turn_t(m_armCANCoder.GetPosition().GetValue()))
+          .velocity(units::angular_velocity::turns_per_second_t(m_armCANCoder.GetVelocity().GetValue()));
         },
         this
       }
@@ -62,7 +62,7 @@ void ArmSubsystem::SimulationPeriodic() {
   // Implementation of subsystem simulation periodic method goes here.
 }
 
-void ArmSubsystem::TeleopMove(const double& omega){
+void ArmSubsystem::TeleopMove(const double omega){
   
   m_armMotor1.Set(omega);
 
@@ -74,14 +74,16 @@ void ArmSubsystem::MoveToSetpoint(){
 
 void ArmSubsystem::ConfigureHardware(){
   
-  m_armMotorConfig.CurrentLimits.StatorCurrentLimitEnable;
-  m_armMotorConfig.CurrentLimits.StatorCurrentLimit = 40.0_A;
-  m_armMotorConfig.MotorOutput.NeutralMode.Coast;
   
-  m_armMotor1.GetConfigurator().Apply(m_armMotorConfig);
-  m_armMotor2.GetConfigurator().Apply(m_armMotorConfig);
-  m_armMotor3.GetConfigurator().Apply(m_armMotorConfig);
-  m_armMotor4.GetConfigurator().Apply(m_armMotorConfig);
+
+  // m_armMotorConfig.CurrentLimits.StatorCurrentLimitEnable;
+  // m_armMotorConfig.CurrentLimits.StatorCurrentLimit = 40.0_A;
+  // m_armMotorConfig.MotorOutput.NeutralMode.Coast;
+  
+  // m_armMotor1.GetConfigurator().Apply(m_armMotorConfig);
+  // m_armMotor2.GetConfigurator().Apply(m_armMotorConfig);
+  // m_armMotor3.GetConfigurator().Apply(m_armMotorConfig);
+  // m_armMotor4.GetConfigurator().Apply(m_armMotorConfig);
 
   auto& slot0Configs = m_armMotorConfig.Slot0;
   slot0Configs.GravityType.Arm_Cosine;
@@ -100,10 +102,11 @@ void ArmSubsystem::ConfigureHardware(){
 
   auto& armFeedback = m_armMotorConfig.Feedback;
   armFeedback.FeedbackRemoteSensorID = m_armCANCoder.GetDeviceID();
-  armFeedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::FusedCANcoder;
-  armFeedback.SensorToMechanismRatio = 1.0;
-  armFeedback.RotorToSensorRatio = Constants::GEAR_RATIO;
-  
+  armFeedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::RotorSensor;
+  armFeedback.SensorToMechanismRatio = Constants::GEAR_RATIO;
+
+  // check the arm motor config stuff
+
   m_armMotor1.GetConfigurator().Apply(m_armMotorConfig);
   m_armMotor2.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), false});
   m_armMotor3.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), true});

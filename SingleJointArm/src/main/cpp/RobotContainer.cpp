@@ -21,14 +21,21 @@ RobotContainer::RobotContainer() {
 
 void RobotContainer::ConfigureBindings() {
 
-  frc2::RunCommand(
+  // frc2::RunCommand(
+  //   [this] {
+  //     m_arm.TeleopMove(
+  //       m_driverController.GetRightY());
+  //   }, 
+  //   {&m_arm});
+
+  m_arm.SetDefaultCommand(
+    frc2::RunCommand(
     [this] {
       m_arm.TeleopMove(
-        m_driverController.GetRightX());
+        m_driverController.GetRightY());
     }, 
-    {&m_arm});
-
-  
+    {&m_arm})
+  );
     // Configure your trigger bindings here
 
   // // Schedule `ArmCommand` when `ArmCondition` changes to `true`
