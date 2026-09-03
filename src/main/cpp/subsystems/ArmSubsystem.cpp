@@ -74,18 +74,22 @@ void ArmSubsystem::MoveToSetpoint(){
 
 void ArmSubsystem::ConfigureHardware(){
   
-  
+  auto& baseArmConfigurator = m_armMotor1.GetConfigurator();
 
-  // m_armMotorConfig.CurrentLimits.StatorCurrentLimitEnable;
-  // m_armMotorConfig.CurrentLimits.StatorCurrentLimit = 40.0_A;
-  // m_armMotorConfig.MotorOutput.NeutralMode.Coast;
-  
-  // m_armMotor1.GetConfigurator().Apply(m_armMotorConfig);
-  // m_armMotor2.GetConfigurator().Apply(m_armMotorConfig);
-  // m_armMotor3.GetConfigurator().Apply(m_armMotorConfig);
-  // m_armMotor4.GetConfigurator().Apply(m_armMotorConfig);
+  configs::TalonFXConfiguration armMotorConfig{};
+  baseArmConfigurator.Refresh(armMotorConfig);
 
-  auto& slot0Configs = m_armMotorConfig.Slot0;
+  // Refresh allows the following static values to be configured and saved between intitializations
+  // armMotorConfig.CurrentLimits.StatorCurrentLimitEnable;
+  // armMotorConfig.CurrentLimits.StatorCurrentLimit = 40.0_A;
+  // armMotorConfig.MotorOutput.NeutralMode.Coast;
+  
+  // m_armMotor1.GetConfigurator().Apply(armMotorConfig);
+  // m_armMotor2.GetConfigurator().Apply(armMotorConfig);
+  // m_armMotor3.GetConfigurator().Apply(armMotorConfig);
+  // m_armMotor4.GetConfigurator().Apply(armMotorConfig);
+
+  auto& slot0Configs = armMotorConfig.Slot0;
   slot0Configs.GravityType.Arm_Cosine;
   slot0Configs.kS = 0.0;
   slot0Configs.kV = 0.0;
@@ -95,19 +99,25 @@ void ArmSubsystem::ConfigureHardware(){
   slot0Configs.kI = 0.0;
   slot0Configs.kD = 0.0;
 
-  auto& motionMagicConfigs = m_armMotorConfig.MotionMagic;
+  auto& motionMagicConfigs = armMotorConfig.MotionMagic;
   motionMagicConfigs.MotionMagicCruiseVelocity = Constants::ARM_CRUISE_VELOCITY;
   motionMagicConfigs.MotionMagicAcceleration = Constants::ARM_MAX_ACCEL;
   motionMagicConfigs.MotionMagicJerk = Constants::ARM_TARGET_JERK;
 
-  auto& armFeedback = m_armMotorConfig.Feedback;
-  armFeedback.FeedbackRemoteSensorID = m_armCANCoder.GetDeviceID();
+  // motor config using rotor encoder values
+  auto& armFeedback = armMotorConfig.Feedback;
   armFeedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::RotorSensor;
   armFeedback.SensorToMechanismRatio = Constants::GEAR_RATIO;
 
+  // motor config with 1:1 CANCoder Values used
+  // auto& armFeedback = armMotorConfig.Feedback;
+  // armFeedback.FeedbackRemoteSensorID = m_armCANCoder.GetDeviceID()
+  // armFeedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::RemoteCANcoder;
+  // armFeedback.SensorToMechanismRatio = 1.0;
+
   // check the arm motor config stuff
 
-  m_armMotor1.GetConfigurator().Apply(m_armMotorConfig);
+  baseArmConfigurator.Apply(armMotorConfig);
   m_armMotor2.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), false});
   m_armMotor3.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), true});
   m_armMotor4.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), true});
