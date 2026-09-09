@@ -48,7 +48,7 @@ class ArmSubsystem : public frc2::SubsystemBase {
    */
   void SimulationPeriodic() override;
 
-  void MoveToSetpoint();
+  void MoveToSetpoint(units::angle::turn_t setpoint);
 
  private:
  
@@ -61,9 +61,13 @@ class ArmSubsystem : public frc2::SubsystemBase {
  hardware::TalonFX  m_armMotor3{28}; 
  hardware::TalonFX  m_armMotor4{29};
 
+ controls::VelocityVoltage m_velocity = controls::VelocityVoltage{0_tps}.WithSlot(0);
+
  hardware::CANcoder m_armCANCoder{7};
 
- controls::MotionMagicVoltage m_request{0_tr}; 
+ controls::MotionMagicVoltage m_request{0_tr};
+ 
+ controls::PositionVoltage m_position = controls::PositionVoltage{0_tr}.WithSlot(0);
  
  // Components (e.g. motor controllers and sensors) should generally be
   // declared private and exposed only through public methods.

@@ -21,13 +21,6 @@ RobotContainer::RobotContainer() {
 
 void RobotContainer::ConfigureBindings() {
 
-  // frc2::RunCommand(
-  //   [this] {
-  //     m_arm.TeleopMove(
-  //       m_driverController.GetRightY());
-  //   }, 
-  //   {&m_arm});
-
   m_arm.SetDefaultCommand(
     frc2::RunCommand(
     [this] {
@@ -52,8 +45,11 @@ void RobotContainer::ConfigureBindings() {
 
 
   // should move the setpoint to a constant value in the constants folder
-  (m_driverController.A() && m_driverController.RightBumper()).OnTrue(
-    m_arm.RunOnce([this] () {m_arm.MoveToSetpoint();})
+  (m_driverController.A() && m_driverController.RightBumper()).WhileTrue(
+    m_arm.Run([this] () {m_arm.MoveToSetpoint(0.1_tr);})
+  );
+  (m_driverController.B() && m_driverController.RightBumper()).WhileTrue(
+    m_arm.Run([this] () {m_arm.MoveToSetpoint(0.4_tr);})
   );
   // create bindings for a couple of setpoints
 }

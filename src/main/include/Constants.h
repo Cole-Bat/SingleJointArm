@@ -21,10 +21,10 @@ namespace Constants {
 
 inline constexpr int kDriverControllerPort = 0;
 
-inline constexpr double GEAR_RATIO = 1.0;
-inline constexpr units::angular_velocity::turns_per_second_t ARM_CRUISE_VELOCITY{0.04}; //in RPS
-inline constexpr units::angular_acceleration::turns_per_second_squared_t ARM_MAX_ACCEL{0.08}; // in RPS / S
-inline constexpr units::angular_jerk::turns_per_second_cubed_t ARM_TARGET_JERK{0.8}; // in RPS / S / S
+inline constexpr double GEAR_RATIO = 123.45;
+inline constexpr units::angular_velocity::turns_per_second_t ARM_CRUISE_VELOCITY{1.0}; //in RPS
+inline constexpr units::angular_acceleration::turns_per_second_squared_t ARM_MAX_ACCEL{3.0}; // in RPS / S
+inline constexpr units::angular_jerk::turns_per_second_cubed_t ARM_TARGET_JERK{24.0}; // in RPS / S / S
 
 
 }  // namespace OperatorConstants

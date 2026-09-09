@@ -23,8 +23,8 @@ ArmSubsystem::ArmSubsystem()
         [this] (frc::sysid::SysIdRoutineLog* log) {
         log->Motor("Arm Motor")
           .voltage(m_armMotor1.GetMotorVoltage().GetValue())
-          .position(units::angle::turn_t(m_armCANCoder.GetPosition().GetValue()))
-          .velocity(units::angular_velocity::turns_per_second_t(m_armCANCoder.GetVelocity().GetValue()));
+          .position(units::angle::turn_t(m_armMotor1.GetPosition().GetValue()))
+          .velocity(units::angular_velocity::turns_per_second_t(m_armMotor1.GetVelocity().GetValue()));
         },
         this
       }
@@ -64,12 +64,23 @@ void ArmSubsystem::SimulationPeriodic() {
 
 void ArmSubsystem::TeleopMove(const double omega){
   
-  m_armMotor1.Set(omega);
+  // velocity control with duty cycle
+  //m_armMotor1.Set(omega);
+
+  // velocity control w/ FF
+  // m_armMotor1.SetControl(m_velocity.WithVelocity(units::angular_velocity::turns_per_second_t(omega * 6.885)));
+
+  m_armMotor1.SetControl(m_position.WithPosition(10_tr));
+  
+
+  // position control w/ FF
 
 }
 
-void ArmSubsystem::MoveToSetpoint(){
-  m_armMotor1.SetControl(m_request.WithPosition(0.1_tr));
+void ArmSubsystem::MoveToSetpoint(units::angle::turn_t setpoint){
+  // Position control w/ FF
+  printf("yes\n");
+  m_armMotor1.SetControl(m_request.WithPosition(setpoint));
 }
 
 void ArmSubsystem::ConfigureHardware(){
@@ -83,11 +94,10 @@ void ArmSubsystem::ConfigureHardware(){
     // Refresh allows static values to be configured and saved between intitializations
 
     auto& slot0Configs = armMotorConfig.Slot0;
-    slot0Configs.GravityType.Arm_Cosine;
-    slot0Configs.kS = 0.0;
-    slot0Configs.kV = 0.0;
-    slot0Configs.kG = 0.0;
-    slot0Configs.kA = 0.0;
+    slot0Configs.kS = 0.097;
+    slot0Configs.kV = 13.49;
+    slot0Configs.kG = 0.077514;
+    slot0Configs.kA = 0.2611;
     slot0Configs.kP = 0.0;
     slot0Configs.kI = 0.0;
     slot0Configs.kD = 0.0;
@@ -102,9 +112,9 @@ void ArmSubsystem::ConfigureHardware(){
     armFeedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::RotorSensor;
     armFeedback.SensorToMechanismRatio = Constants::GEAR_RATIO;
 
-    // motor config with 1:1 CANCoder Values used
+    //motor config with 1:1 CANCoder Values used
     // auto& armFeedback = armMotorConfig.Feedback;
-    // armFeedback.FeedbackRemoteSensorID = m_armCANCoder.GetDeviceID()
+    // armFeedback.FeedbackRemoteSensorID = m_armCANCoder.GetDeviceID();
     // armFeedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::RemoteCANcoder;
     // armFeedback.SensorToMechanismRatio = 1.0;
 
@@ -115,11 +125,11 @@ void ArmSubsystem::ConfigureHardware(){
     m_armMotor3.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), true});
     m_armMotor4.SetControl(controls::Follower{m_armMotor1.GetDeviceID(), true});
 
-  // CANCoder Configuration
-    auto& CANCoderconfigurator = m_armCANCoder.GetConfigurator();
-    configs::CANcoderConfiguration armCANCoderConfig{};
+  // CANCoder Configuration - most likely obsolete
+    // auto& CANCoderconfigurator = m_armCANCoder.GetConfigurator();
+    // configs::CANcoderConfiguration armCANCoderConfig{};
 
-    CANCoderconfigurator.Refresh(armCANCoderConfig);
+    // CANCoderconfigurator.Refresh(armCANCoderConfig);
 
     // CANCoder config can be placed here
 
